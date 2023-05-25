@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "378140653779",
+    "project_id": "communitesocial",
+    "storage_bucket": "communitesocial.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:378140653779:android:0239d86b920b05c625bc26",
+        "android_client_info": {
+          "package_name": "com.example.communitesocial"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "378140653779-qgtt4p4fqu8hldhlnrgqabse0lflobf2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlHD50O92i-_aR_t4oIm2OQ4CWQQvWbx8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "378140653779-qgtt4p4fqu8hldhlnrgqabse0lflobf2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
