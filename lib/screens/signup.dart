@@ -1,8 +1,11 @@
 import 'package:communitesocial/resources/auth_method.dart';
+import 'package:communitesocial/screens/login.dart';
 import 'package:communitesocial/utils/colors.dart';
+import 'package:communitesocial/utils/utils.dart';
 import 'package:communitesocial/widgets/textinput.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -15,6 +18,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  Uint8List? _image;
 
   @override
   void dispose(){
@@ -22,6 +26,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+  }
+
+  void irLogin(){
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => LoginScreen()
+      ),
+    );
+  }
+
+  void selectImage() async {
+    Uint8List im = await PickImage(ImageSource.gallery);
+    setState(() {
+      _image = im;
+    });
   }
 
   @override
@@ -41,7 +60,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const SizedBox(height: 64),
               Stack(
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                     radius: 64,
                     backgroundImage: NetworkImage("https://i.imgflip.com/7mu107.jpg"),
                   ),
@@ -83,7 +102,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               InkWell(
                 onTap: () async{
-                  String response = await AutenticarRegistro().registroUsuario(
+                  String response = await AutenticarMetodos().registroUsuario(
                     username: _usernameController.text, 
                     email: _emailController.text, 
                     passwd: _passwordController.text
@@ -115,15 +134,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    child: const Text("No tienes una cuenta? "),
+                    child: const Text("Tienes cuenta ya? "),
                     padding: const EdgeInsets.symmetric(
                       vertical: 8
                     ),
                   ),
                   GestureDetector(
-                  onTap: (){},
+                  onTap: irLogin,
                   child: Container(
-                    child: const Text("Registrate.", 
+                    child: const Text("Iniciar Sesión.", 
                       style: TextStyle(
                         fontWeight: FontWeight.bold
                         ),

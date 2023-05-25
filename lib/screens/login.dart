@@ -1,7 +1,15 @@
+import 'package:communitesocial/responsive/mobile_layout.dart';
+import 'package:communitesocial/responsive/responsive_layout.dart';
+import 'package:communitesocial/responsive/web_layout.dart';
+import 'package:communitesocial/screens/home_screen.dart';
+import 'package:communitesocial/screens/signup.dart';
 import 'package:communitesocial/utils/colors.dart';
+import 'package:communitesocial/utils/utils.dart';
 import 'package:communitesocial/widgets/textinput.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import '../resources/auth_method.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,6 +21,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose(){
@@ -21,6 +30,31 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordController.dispose();
   }
 
+  void irRegistro(){
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => SignUpScreen()
+      ),
+    );
+  }
+
+  void loginUsuario() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String response = await AutenticarMetodos().loginUsuario(
+      email: _emailController.text, 
+      password: _passwordController.text
+    );
+    if(response=="success"){
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
+    }else{
+      showSnackBar(response, context);
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,8 +89,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 24, 
               ),
               InkWell(
+                onTap: loginUsuario,
                 child:Container(
-                  child: const Text("Iniciar Sesión"),
+                  child: _isLoading ? 
+                  const Center(
+                    child: CircularProgressIndicator(
+                      color: primaryColor,
+                    ),
+                  )
+                  : const Text("Iniciar Sesión"),
                   width: double.infinity,
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(vertical: 12),
@@ -87,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   GestureDetector(
-                  onTap: (){},
+                  onTap: irRegistro,
                   child: Container(
                     child: const Text("Registrate.", 
                       style: TextStyle(
