@@ -2,13 +2,26 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:ui';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:communitesocial/model/user.dart' as model;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
+import '../utils/constants.dart';
+
 class AutenticarMetodos{
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<model.User> getUserDetails() async{
+    User currentUser = _auth.currentUser!;
+
+    DocumentSnapshot snap = await _firestore.collection("usuarios").doc(currentUser.uid).get();
+
+    return model.User.fromSnap(snap);
+  }
 
   //registrar usuario
   Future <String> registroUsuario({
@@ -31,10 +44,7 @@ class AutenticarMetodos{
         );
 
         await _firestore.collection('usuarios').doc(cred.user!.uid).set(user.toJson(),);
-
-        //await _firestore.collection('usuarios').add(user.toJson(),);
-
-        response = 'success';
+        response = 'Registro satisfactorio';
       }
     } catch(error){
       response = error.toString();

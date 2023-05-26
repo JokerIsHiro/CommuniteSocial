@@ -7,9 +7,11 @@ import 'package:communitesocial/utils/colors.dart';
 import 'package:communitesocial/utils/utils.dart';
 import 'package:communitesocial/widgets/textinput.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutter/services.dart';
 
 import '../resources/auth_method.dart';
+import '../widgets/button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -66,11 +68,20 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'images/logod.png',
+                    height: 128,
+                  ),
+                ]
+              ),
               Flexible(
                 child: Container(),
                 flex: 2,
               ),
-              const SizedBox(height: 64),
+              const SizedBox(height: 32),
               TextFieldInput(
                 hintText: "Inserte su E-Mail",
                 textInputType: TextInputType.emailAddress,
@@ -88,28 +99,29 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(
                 height: 24, 
               ),
-              InkWell(
-                onTap: loginUsuario,
-                child:Container(
-                  child: _isLoading ? 
-                  const Center(
-                    child: CircularProgressIndicator(
-                      color: primaryColor,
-                    ),
-                  )
-                  : const Text("Iniciar Sesión"),
-                  width: double.infinity,
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: const ShapeDecoration(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(4)
-                      )
-                    ),
-                    color: blueColor
+              LoadingBtn(
+                height: 50,
+                borderRadius: 8,
+                animate: true,
+                color: blueColor,
+                width: MediaQuery.of(context).size.width * 0.45,
+                loader: Container(
+                  padding: const EdgeInsets.all(10),
+                  width: 40,
+                  height: 40,
+                  child: const CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   ),
                 ),
+                child: const Text("Iniciar Sesión"),
+                onTap: (startLoading, stopLoading, btnState) async {
+                  if (btnState == ButtonState.idle) {
+                    startLoading();
+                    await Future.delayed(const Duration(seconds: 2));
+                    loginUsuario();
+                    stopLoading();
+                  }
+                },
               ),
               const SizedBox(
                 height: 12, 

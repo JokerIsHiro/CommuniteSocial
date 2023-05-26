@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../widgets/button.dart';
+import 'home_screen.dart';
+
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
@@ -19,6 +22,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   Uint8List? _image;
+  bool _isLoading = false;
 
   @override
   void dispose(){
@@ -27,6 +31,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _emailController.dispose();
     _passwordController.dispose();
   }
+
+  void registrarUsuario() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String response = await AutenticarMetodos().registroUsuario(
+      username: _usernameController.text,
+      email: _emailController.text, 
+      passwd: _passwordController.text
+    );
+    if(response=="success"){
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginScreen()));
+    }else{
+      showSnackBar(response, context);
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
 
   void irLogin(){
     Navigator.of(context).pushReplacement(
@@ -53,6 +77,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              Image.asset(
+                'images/logod.png',
+                height: 128,
+              ),
               Flexible(
                 child: Container(),
                 flex: 2,
@@ -100,28 +128,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const SizedBox(
                 height: 24, 
               ),
-              InkWell(
-                onTap: () async{
-                  String response = await AutenticarMetodos().registroUsuario(
-                    username: _usernameController.text, 
-                    email: _emailController.text, 
-                    passwd: _passwordController.text
-                    );
-                  },
-                child:Container(
-                  child: const Text("Registrar"),
-                  width: double.infinity,
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: const ShapeDecoration(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(4)
-                      )
-                    ),
-                    color: blueColor
+              LoadingBtn(
+                height: 50,
+                borderRadius: 8,
+                animate: true,
+                color: blueColor,
+                width: MediaQuery.of(context).size.width * 0.45,
+                loader: Container(
+                  padding: const EdgeInsets.all(10),
+                  width: 40,
+                  height: 40,
+                  child: const CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   ),
                 ),
+                child: const Text("Registrar"),
+                onTap: (startLoading, stopLoading, btnState) async {
+                  if (btnState == ButtonState.idle) {
+                    startLoading();
+                    await Future.delayed(const Duration(seconds: 2));
+                    registrarUsuario();
+                    stopLoading();
+                  }
+                },
               ),
               const SizedBox(
                 height: 12, 
