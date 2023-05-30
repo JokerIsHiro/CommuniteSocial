@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:communitesocial/model/user.dart' as model;
 import '../providers/user_providers.dart';
 import '../screens/home_screen.dart';
+import '../utils/global_variables.dart';
 
 class MobileLayout extends StatefulWidget {
   const MobileLayout({super.key});
@@ -47,14 +48,8 @@ class _MobileLayoutState extends State<MobileLayout> {
     model.User user = Provider.of<UserProvider>(context).getUser;
     return Scaffold(
       body: PageView(
-        children: [
-          Text("inicio"),
-          Text("buscar"),
-          Text("chats"),
-          Text("publicar"),
-          Text("perfil"),
-        ],
-        physics: NeverScrollableScrollPhysics(),
+        children: homeScreenitems,
+        physics: const NeverScrollableScrollPhysics(),
         controller: pageController,
         onPageChanged: onPageChanged,
       ),

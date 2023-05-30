@@ -22,7 +22,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   Uint8List? _image;
-  bool _isLoading = false;
 
   @override
   void dispose(){
@@ -33,24 +32,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void registrarUsuario() async {
-    setState(() {
-      _isLoading = true;
-    });
     String response = await AutenticarMetodos().registroUsuario(
       username: _usernameController.text,
       email: _emailController.text, 
-      passwd: _passwordController.text
-    );
+      passwd: _passwordController.text,
+      file: _image!);
     if(response=="success"){
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginScreen()));
     }else{
       showSnackBar(response, context);
     }
-    setState(() {
-      _isLoading = false;
-    });
   }
-
 
   void irLogin(){
     Navigator.of(context).pushReplacement(
@@ -60,8 +52,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  void selectImage() async {
-    Uint8List im = await PickImage(ImageSource.gallery);
+  selectImage() async {
+    Uint8List im = await pickImage(ImageSource.gallery);
     setState(() {
       _image = im;
     });
@@ -88,15 +80,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const SizedBox(height: 64),
               Stack(
                 children: [
-                  const CircleAvatar(
+                  _image != null?CircleAvatar(
                     radius: 64,
-                    backgroundImage: NetworkImage("https://i.imgflip.com/7mu107.jpg"),
+                    backgroundImage: MemoryImage(_image!),
+                  )
+                  : const CircleAvatar(
+                    radius: 64,
+                    backgroundImage: NetworkImage("https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1200px-Default_pfp.svg.png"),
                   ),
                   Positioned(
                     bottom: -10,
                     left: 80,
                     child: IconButton(
-                      onPressed: (){},
+                      onPressed: selectImage,
                       icon: const Icon(
                         Icons.add_a_photo,
                       ),

@@ -1,6 +1,8 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:communitesocial/resources/storage_methods.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
@@ -28,23 +30,31 @@ class AutenticarMetodos{
     required String username,
     required String email,
     required String passwd,
-
+    required Uint8List file
   }) async {
     String response = 'Ha ocurrido algún error';
     try{
       if(email.isNotEmpty || passwd.isNotEmpty || username.isNotEmpty){
         UserCredential cred = await _auth.createUserWithEmailAndPassword(email: email, password: passwd);
 
+        String photoUrl = await AlmacenamientoMetodos().subirImagen('profilePics', file, false);
+
         model.User user = model.User(
           username: username,
           uid: cred.user!.uid,
           email: email,
+          photoUrl: photoUrl,
           followers: [],
           following: []
         );
 
-        await _firestore.collection('usuarios').doc(cred.user!.uid).set(user.toJson(),);
+        await _firestore.collection('usuarios').doc(cred.user!.uid).set(user.toJson());
+
         response = 'Registro satisfactorio';
+      }
+    }on FirebaseAuthException catch(err){
+      if(err.code == 'invalid-email'){
+        response = "El email está mal formateado";
       }
     } catch(error){
       response = error.toString();
