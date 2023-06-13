@@ -1,7 +1,6 @@
 import 'package:communitesocial/responsive/mobile_layout.dart';
 import 'package:communitesocial/responsive/responsive_layout.dart';
 import 'package:communitesocial/responsive/web_layout.dart';
-import 'package:communitesocial/screens/home_screen.dart';
 import 'package:communitesocial/screens/signup.dart';
 import 'package:communitesocial/utils/colors.dart';
 import 'package:communitesocial/utils/utils.dart';
@@ -48,16 +47,26 @@ class _LoginScreenState extends State<LoginScreen> {
       email: _emailController.text, 
       password: _passwordController.text
     );
-    if(response=="success"){
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
-    }else{
-      showSnackBar(response, context);
-    }
-    setState(() {
-      _isLoading = false;
-    });
-  }
+    if (response == 'success') {
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => const ResponsiveLayout(
+              mobileScreenLayout: MobileLayout(),
+              webScreenLayout: WebLayout(),
+            ),
+          ),
+          (route) => false);
 
+      setState(() {
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      showSnackBar(context, response);
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

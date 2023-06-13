@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../widgets/button.dart';
-import 'home_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -40,7 +39,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if(response=="success"){
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginScreen()));
     }else{
-      showSnackBar(response, context);
+      showSnackBar(context, response);
     }
   }
 

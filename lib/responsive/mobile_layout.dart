@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:communitesocial/model/user.dart' as model;
 import '../providers/user_providers.dart';
-import '../screens/home_screen.dart';
 import '../utils/global_variables.dart';
 
 class MobileLayout extends StatefulWidget {
@@ -45,10 +44,9 @@ class _MobileLayoutState extends State<MobileLayout> {
 
   @override
   Widget build(BuildContext context) {
-    model.User user = Provider.of<UserProvider>(context).getUser;
     return Scaffold(
       body: PageView(
-        children: homeScreenitems,
+        children: homeScreenItems,
         physics: const NeverScrollableScrollPhysics(),
         controller: pageController,
         onPageChanged: onPageChanged,

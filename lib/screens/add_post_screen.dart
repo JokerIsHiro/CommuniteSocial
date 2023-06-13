@@ -7,6 +7,8 @@ import 'package:communitesocial/utils/colors.dart';
 import 'package:communitesocial/utils/utils.dart';
 import 'package:provider/provider.dart';
 
+import '../resources/firestore_method.dart';
+
 class AddPostScreen extends StatefulWidget {
   const AddPostScreen({Key? key}) : super(key: key);
 
@@ -19,73 +21,182 @@ class _AddPostScreenState extends State<AddPostScreen> {
   bool isLoading = false;
   final TextEditingController _descriptionController = TextEditingController();
 
+  _selectImage(BuildContext parentContext) async {
+    return showDialog(
+      context: parentContext,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text('Create a Post'),
+          children: <Widget>[
+            SimpleDialogOption(
+                padding: const EdgeInsets.all(20),
+                child: const Text('Take a photo'),
+                onPressed: () async {
+                  Navigator.pop(context);
+                  Uint8List file = await pickImage(ImageSource.camera);
+                  setState(() {
+                    _file = file;
+                  });
+                }),
+            SimpleDialogOption(
+                padding: const EdgeInsets.all(20),
+                child: const Text('Choose from Gallery'),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  Uint8List file = await pickImage(ImageSource.gallery);
+                  setState(() {
+                    _file = file;
+                  });
+                }),
+            SimpleDialogOption(
+              padding: const EdgeInsets.all(20),
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  void postImage(String uid, String username, String profImage) async {
+    setState(() {
+      isLoading = true;
+    });
+    // start the loading
+    try {
+      // upload to storage and db
+      String res = await FirestoreMetodos().subirPublicacion(
+        _descriptionController.text,
+        _file!,
+        uid,
+        username,
+        profImage,
+      );
+      if (res == "success") {
+        setState(() {
+          isLoading = false;
+        });
+        showSnackBar(
+          context,
+          'Posted!',
+        );
+        clearImage();
+      } else {
+        showSnackBar(context, res);
+      }
+    } catch (err) {
+      setState(() {
+        isLoading = false;
+      });
+      showSnackBar(
+        context,
+        err.toString(),
+      );
+    }
+  }
+
+  void clearImage() {
+    setState(() {
+      _file = null;
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _descriptionController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final UserProvider userProvider = Provider.of<UserProvider>(context);
-      return Scaffold(
-        appBar: AppBar(
-          backgroundColor: mobileBackgroundColor,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: (){},
-          ),
-          title: const Text("Publicar"),
-          centerTitle: false,
-          actions: [
-            TextButton(
-              onPressed: (){}, 
-              child: const Text("Publicar", 
-                style: TextStyle(color: Colors.blueAccent, 
-                fontWeight: FontWeight.bold, 
-                fontSize: 16,
-                )
+
+    return _file == null
+        ? Center(
+            child: IconButton(
+              icon: const Icon(
+                Icons.upload,
               ),
+              onPressed: () => _selectImage(context),
             ),
-          ],
-        ),
-        body: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  backgroundImage: NetworkImage(
-                  "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1200px-Default_pfp.svg.png"
+          )
+        : Scaffold(
+            appBar: AppBar(
+              backgroundColor: mobileBackgroundColor,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: clearImage,
+              ),
+              title: const Text(
+                'Post to',
+              ),
+              centerTitle: false,
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => postImage(
+                    userProvider.getUser.uid,
+                    userProvider.getUser.username,
+                    userProvider.getUser.photoUrl,
                   ),
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width*0.3,
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      hintText: "Escribe una descripción",
-                      border: InputBorder.none,
-                    ),
-                    maxLines: 8,
+                  child: const Text(
+                    "Post",
+                    style: TextStyle(
+                        color: Colors.blueAccent,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0),
                   ),
-                ),
-                SizedBox(
-                  height: 45,
-                  width: 45,
-                  child: AspectRatio(
-                    aspectRatio: 487 / 451,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: NetworkImage("https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1200px-Default_pfp.svg.png"),
-                          fit: BoxFit.fill,
-                          alignment: FractionalOffset.topCenter
-                        )
+                )
+              ],
+            ),
+            // POST FORM
+            body: Column(
+              children: <Widget>[
+                isLoading
+                    ? const LinearProgressIndicator()
+                    : const Padding(padding: EdgeInsets.only(top: 0.0)),
+                const Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    CircleAvatar(
+                      backgroundImage: NetworkImage(
+                        userProvider.getUser.photoUrl,
                       ),
                     ),
-                  ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.3,
+                      child: TextField(
+                        controller: _descriptionController,
+                        decoration: const InputDecoration(
+                            hintText: "Write a caption...",
+                            border: InputBorder.none),
+                        maxLines: 8,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 45.0,
+                      width: 45.0,
+                      child: AspectRatio(
+                        aspectRatio: 487 / 451,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                            fit: BoxFit.fill,
+                            alignment: FractionalOffset.topCenter,
+                            image: MemoryImage(_file!),
+                          )),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const Divider(),
               ],
-            )
-          ],
-        ),
-      );
+            ),
+          );
   }
 }

@@ -10,10 +10,10 @@ pickImage(ImageSource source) async {
   print('No Image Selected');
 }
 
-showSnackBar(String content, BuildContext context){
-  ScaffoldMessenger.of(context).showSnackBar(
+showSnackBar(BuildContext context, String text) {
+  return ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      content: Text(content),
+      content: Text(text),
     ),
   );
 }
