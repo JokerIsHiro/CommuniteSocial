@@ -43,15 +43,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-  void irLogin(){
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => LoginScreen()
-      ),
-    );
-  }
-
-  selectImage() async {
+  void selectImage() async {
     Uint8List im = await pickImage(ImageSource.gallery);
     setState(() {
       _image = im;

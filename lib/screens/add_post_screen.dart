@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:communitesocial/model/user.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:communitesocial/providers/user_providers.dart';
@@ -8,6 +9,7 @@ import 'package:communitesocial/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 import '../resources/firestore_method.dart';
+import '../widgets/button.dart';
 
 class AddPostScreen extends StatefulWidget {
   const AddPostScreen({Key? key}) : super(key: key);
@@ -81,7 +83,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
         });
         showSnackBar(
           context,
-          'Posted!',
+          'Publicado!',
         );
         clearImage();
       } else {
@@ -112,7 +114,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final UserProvider userProvider = Provider.of<UserProvider>(context);
+    final User userProvider = Provider.of<UserProvider>(context).getUser;
 
     return _file == null
         ? Center(
@@ -134,22 +136,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 'Post to',
               ),
               centerTitle: false,
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => postImage(
-                    userProvider.getUser.uid,
-                    userProvider.getUser.username,
-                    userProvider.getUser.photoUrl,
-                  ),
-                  child: const Text(
-                    "Post",
-                    style: TextStyle(
-                        color: Colors.blueAccent,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16.0),
-                  ),
-                )
-              ],
             ),
             // POST FORM
             body: Column(
@@ -158,15 +144,23 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     ? const LinearProgressIndicator()
                     : const Padding(padding: EdgeInsets.only(top: 0.0)),
                 const Divider(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(
-                        userProvider.getUser.photoUrl,
+                SizedBox(
+                      height: 300.0,
+                      width: 300.0,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                            fit: BoxFit.fill,
+                            alignment: FractionalOffset.topCenter,
+                            image: MemoryImage(_file!),
+                          )),
+                        ),
                       ),
-                    ),
+                const Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.3,
                       child: TextField(
@@ -177,26 +171,40 @@ class _AddPostScreenState extends State<AddPostScreen> {
                         maxLines: 8,
                       ),
                     ),
-                    SizedBox(
-                      height: 45.0,
-                      width: 45.0,
-                      child: AspectRatio(
-                        aspectRatio: 487 / 451,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              image: DecorationImage(
-                            fit: BoxFit.fill,
-                            alignment: FractionalOffset.topCenter,
-                            image: MemoryImage(_file!),
-                          )),
-                        ),
+                  const Divider(),
+                ],
+              ),
+              const Divider(),
+               LoadingBtn(
+                    height: 50,
+                    borderRadius: 8,
+                    animate: true,
+                    color: blueColor,
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    loader: Container(
+                      padding: const EdgeInsets.all(10),
+                      width: 40,
+                      height: 40,
+                      child: const CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
                     ),
-                  ],
-                ),
-                const Divider(),
-              ],
-            ),
-          );
+                    child: const Text("Publicar"),
+                    onTap: (startLoading, stopLoading, btnState) async {
+                      if (btnState == ButtonState.idle) {
+                        startLoading();
+                        await Future.delayed(const Duration(seconds: 2));
+                        onPressed: () => postImage(
+                          userProvider.uid,
+                          userProvider.username,
+                          userProvider.photoUrl,
+                        );
+                        stopLoading();
+                      }
+                    },
+                  ),
+            ],
+          ),
+        );
   }
 }

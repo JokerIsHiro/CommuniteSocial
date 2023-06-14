@@ -31,14 +31,6 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordController.dispose();
   }
 
-  void irRegistro(){
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => SignUpScreen()
-      ),
-    );
-  }
-
   void loginUsuario() async {
     setState(() {
       _isLoading = true;

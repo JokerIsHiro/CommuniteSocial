@@ -81,4 +81,8 @@ class AutenticarMetodos{
     }
     return response;
   }
+
+  Future<void> cerrarSesion() async {
+    await _auth.signOut();
+  }
 }
