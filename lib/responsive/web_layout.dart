@@ -49,7 +49,7 @@ class _WebLayoutState extends State<WebLayout> {
         backgroundColor: mobileBackgroundColor,
         centerTitle: false,
         title: SvgPicture.asset(
-          'assets/ic_instagram.svg',
+          'images/logoo.svg',
           color: primaryColor,
           height: 32,
         ),

@@ -11,7 +11,7 @@ class FirestoreMetodos{
 
   Future<String> subirPublicacion(
     String descripcion,
-    Uint8List file,
+    Uint8List? file,
     String uid,
     String username,
     String profImage
@@ -21,7 +21,7 @@ class FirestoreMetodos{
 
     try {
       
-      String photoUrl = await AlmacenamientoMetodos().subirImagen("publicaciones", file, true);
+      String photoUrl = await AlmacenamientoMetodos().subirImagen('publicaciones', file!, true);
       String postId = const Uuid().v1();
 
       Post post = Post(
@@ -34,24 +34,23 @@ class FirestoreMetodos{
         postUrl: photoUrl,
         profImage: profImage,
       );
-       _firestore.collection('posts').doc(postId).set(post.toJson());
+       _firestore.collection('publicaciones').doc(postId).set(post.toJson());
       response = "success";
     } catch (e) {
       response = e.toString();
     }
     return response;
   }
+
   Future<String> likePost(String postId, String uid, List likes) async {
-    String res = "Some error occurred";
+    String res = "Ha ocurrido algún error";
     try {
       if (likes.contains(uid)) {
-        // if the likes list contains the user uid, we need to remove it
-        _firestore.collection('posts').doc(postId).update({
+        _firestore.collection('publicaciones').doc(postId).update({
           'likes': FieldValue.arrayRemove([uid])
         });
       } else {
-        // else we need to add uid to the likes array
-        _firestore.collection('posts').doc(postId).update({
+        _firestore.collection('publicaciones').doc(postId).update({
           'likes': FieldValue.arrayUnion([uid])
         });
       }
@@ -62,18 +61,17 @@ class FirestoreMetodos{
     return res;
   }
 
-  // Post comment
   Future<String> postComment(String postId, String text, String uid,
       String name, String profilePic) async {
-    String res = "Some error occurred";
+    String res = "Ha ocurrido algún error";
     try {
       if (text.isNotEmpty) {
         // if the likes list contains the user uid, we need to remove it
         String commentId = const Uuid().v1();
         _firestore
-            .collection('posts')
+            .collection('publicaciones')
             .doc(postId)
-            .collection('comments')
+            .collection('comentarios')
             .doc(commentId)
             .set({
           'profilePic': profilePic,
@@ -85,7 +83,7 @@ class FirestoreMetodos{
         });
         res = 'success';
       } else {
-        res = "Please enter text";
+        res = "Introduzca un texto por favor";
       }
     } catch (err) {
       res = err.toString();
@@ -93,11 +91,37 @@ class FirestoreMetodos{
     return res;
   }
 
-  // Delete Post
-  Future<String> deletePost(String postId) async {
-    String res = "Some error occurred";
+  Future<void> likeComment(
+      String postId, String commentId, String uid, List likes) async {
     try {
-      await _firestore.collection('posts').doc(postId).delete();
+      if (likes.contains(uid)) {
+        await _firestore
+            .collection('publicaciones')
+            .doc(postId)
+            .collection('comentarios')
+            .doc(commentId)
+            .update({
+          'likes': FieldValue.arrayRemove([uid])
+        });
+      } else {
+        await _firestore
+            .collection('publicaciones')
+            .doc(postId)
+            .collection('comentarios')
+            .doc(commentId)
+            .update({
+          'likes': FieldValue.arrayUnion([uid])
+        });
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  Future<String> deletePost(String postId) async {
+    String res = "Ha ocurrido algún error";
+    try {
+      await _firestore.collection('publicaciones').doc(postId).delete();
       res = 'success';
     } catch (err) {
       res = err.toString();
@@ -105,7 +129,7 @@ class FirestoreMetodos{
     return res;
   }
 
-  Future<void> followUser(
+Future<void> followUser(
     String uid,
     String followId
   ) async {

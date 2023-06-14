@@ -20,9 +20,10 @@ class AutenticarMetodos{
   Future<model.User> getUserDetails() async{
     User currentUser = _auth.currentUser!;
 
-    DocumentSnapshot snap = await _firestore.collection("usuarios").doc(currentUser.uid).get();
+    DocumentSnapshot documentSnapshot =
+        await _firestore.collection('usuarios').doc(currentUser.uid).get();
 
-    return model.User.fromSnap(snap);
+    return model.User.fromSnap(documentSnapshot);
   }
 
   //registrar usuario

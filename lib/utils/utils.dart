@@ -7,6 +7,7 @@ import '../screens/login.dart';
 import '../screens/signup.dart';
 
 pickImage(ImageSource source) async {
+  
   final ImagePicker _imagePicker = ImagePicker();
 
   XFile? _file = await _imagePicker.pickImage(source: source);
@@ -25,18 +26,5 @@ showSnackBar(BuildContext context, String text) {
   );
 }
 
-void irLogin(){
-    Navigator.of(context as BuildContext).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => LoginScreen()
-      ),
-    );
-  }
 
-  void irRegistro(){
-    Navigator.of(context as BuildContext).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => SignUpScreen()
-      ),
-    );
-  }
+  

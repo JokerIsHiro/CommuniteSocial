@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:communitesocial/model/user.dart';
@@ -19,7 +20,7 @@ class AddPostScreen extends StatefulWidget {
 }
 
 class _AddPostScreenState extends State<AddPostScreen> {
-  Uint8List? _file;
+  Uint8List? _image;
   bool isLoading = false;
   final TextEditingController _descriptionController = TextEditingController();
 
@@ -28,31 +29,31 @@ class _AddPostScreenState extends State<AddPostScreen> {
       context: parentContext,
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: const Text('Create a Post'),
+          title: const Text('Crear una publicación'),
           children: <Widget>[
             SimpleDialogOption(
                 padding: const EdgeInsets.all(20),
-                child: const Text('Take a photo'),
+                child: const Text('Sacar una foto'),
                 onPressed: () async {
                   Navigator.pop(context);
                   Uint8List file = await pickImage(ImageSource.camera);
                   setState(() {
-                    _file = file;
+                    _image = file;
                   });
                 }),
             SimpleDialogOption(
                 padding: const EdgeInsets.all(20),
-                child: const Text('Choose from Gallery'),
+                child: const Text('Seleccionar desde la galería'),
                 onPressed: () async {
                   Navigator.of(context).pop();
                   Uint8List file = await pickImage(ImageSource.gallery);
                   setState(() {
-                    _file = file;
+                    _image = file;
                   });
                 }),
             SimpleDialogOption(
               padding: const EdgeInsets.all(20),
-              child: const Text("Cancel"),
+              child: const Text("Cancelar"),
               onPressed: () {
                 Navigator.pop(context);
               },
@@ -63,7 +64,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
     );
   }
 
-  void postImage(String uid, String username, String profImage) async {
+  postImage(String uid, String username, String profImage) async {
     setState(() {
       isLoading = true;
     });
@@ -72,7 +73,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
       // upload to storage and db
       String res = await FirestoreMetodos().subirPublicacion(
         _descriptionController.text,
-        _file!,
+        _image!,
         uid,
         username,
         profImage,
@@ -81,13 +82,34 @@ class _AddPostScreenState extends State<AddPostScreen> {
         setState(() {
           isLoading = false;
         });
-        showSnackBar(
-          context,
-          'Publicado!',
-        );
+        showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Informe de la publicación'),
+          content: const Text('Se ha publicado correctamente'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'OK'),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
         clearImage();
       } else {
-        showSnackBar(context, res);
+         showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Informe de la publicación'),
+          content: Text(res),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'OK'),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
       }
     } catch (err) {
       setState(() {
@@ -102,7 +124,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
   void clearImage() {
     setState(() {
-      _file = null;
+      _image = null;
     });
   }
 
@@ -116,7 +138,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   Widget build(BuildContext context) {
     final User userProvider = Provider.of<UserProvider>(context).getUser;
 
-    return _file == null
+    return _image == null
         ? Center(
             child: IconButton(
               icon: const Icon(
@@ -152,7 +174,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                               image: DecorationImage(
                             fit: BoxFit.fill,
                             alignment: FractionalOffset.topCenter,
-                            image: MemoryImage(_file!),
+                            image: MemoryImage(_image!),
                           )),
                         ),
                       ),
@@ -166,7 +188,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                       child: TextField(
                         controller: _descriptionController,
                         decoration: const InputDecoration(
-                            hintText: "Write a caption...",
+                            hintText: "Escribe una descripción",
                             border: InputBorder.none),
                         maxLines: 8,
                       ),
@@ -194,7 +216,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                       if (btnState == ButtonState.idle) {
                         startLoading();
                         await Future.delayed(const Duration(seconds: 2));
-                        onPressed: () => postImage(
+                        postImage(
                           userProvider.uid,
                           userProvider.username,
                           userProvider.photoUrl,
