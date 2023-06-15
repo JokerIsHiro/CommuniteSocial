@@ -1,13 +1,17 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:communitesocial/utils/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:communitesocial/model/user.dart' as model;
 import '../providers/user_providers.dart';
 import '../utils/global_variables.dart';
+import '../utils/utils.dart';
 
 class MobileLayout extends StatefulWidget {
   const MobileLayout({super.key});
@@ -19,6 +23,8 @@ class MobileLayout extends StatefulWidget {
 class _MobileLayoutState extends State<MobileLayout> {
   int _page = 0;
   late PageController pageController;
+  Uint8List? _image;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -33,7 +39,12 @@ class _MobileLayoutState extends State<MobileLayout> {
   }
 
   void navegarPresionado(int page){
-    pageController.jumpToPage(page);
+    if(navegarPresionado == 3){
+      showModal(context);
+      pageController.jumpToPage(page);
+    }else{
+      pageController.jumpToPage(page);
+    }
   }
 
   void onPageChanged(int page){
@@ -82,8 +93,49 @@ class _MobileLayoutState extends State<MobileLayout> {
             backgroundColor: primaryColor
           ),
         ],
-        onTap: navegarPresionado,
+        onTap: navegarPresionado
       ),
     );
   }
+  
+  void showModal (BuildContext parentContext) async {
+    return showDialog<void>(
+      context: parentContext,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text('Crear una publicación'),
+          children: <Widget>[
+            SimpleDialogOption(
+                padding: const EdgeInsets.all(20),
+                child: const Text('Sacar una foto'),
+                onPressed: () async {
+                  Navigator.pop(context);
+                  Uint8List file = await pickImage(ImageSource.camera);
+                  setState(() {
+                    _image = file;
+                  });
+                }),
+            SimpleDialogOption(
+                padding: const EdgeInsets.all(20),
+                child: const Text('Seleccionar desde la galería'),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  Uint8List file = await pickImage(ImageSource.gallery);
+                  setState(() {
+                    _image = file;
+                  });
+                }),
+            SimpleDialogOption(
+              padding: const EdgeInsets.all(20),
+              child: const Text("Cancelar"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+  
 }

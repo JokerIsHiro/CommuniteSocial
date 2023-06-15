@@ -108,8 +108,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
                                     buildStatColumn(postLen, "publicaciones"),
-                                    buildStatColumn(followers, "followers"),
-                                    buildStatColumn(following, "following"),
+                                    buildStatColumn(followers, "Seguidores"),
+                                    buildStatColumn(following, "Siguiendo"),
                                   ],
                                 ),
                                 Row(
@@ -125,7 +125,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             textColor: primaryColor,
                                             borderColor: Colors.grey,
                                             function: () async {
-                                              await AutenticarMetodos().cerrarSesion();
+                                              await AutenticarMetodos()
+                                                  .cerrarSesion();
                                               Navigator.of(context)
                                                   .pushReplacement(
                                                 MaterialPageRoute(
@@ -137,13 +138,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           )
                                         : isFollowing
                                             ? FollowButton(
-                                                text: 'Dejar de seguir',
+                                                text: 'Dejar de Seguir',
                                                 backgroundColor: Colors.white,
                                                 textColor: Colors.black,
                                                 borderColor: Colors.grey,
                                                 function: () async {
                                                   await FirestoreMetodos()
-                                                      .followUser(
+                                                      .seguirUsuario(
                                                     FirebaseAuth.instance
                                                         .currentUser!.uid,
                                                     userData['uid'],
@@ -162,12 +163,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 borderColor: Colors.blue,
                                                 function: () async {
                                                   await FirestoreMetodos()
-                                                      .followUser(
+                                                      .seguirUsuario(
                                                     FirebaseAuth.instance
                                                         .currentUser!.uid,
                                                     userData['uid'],
                                                   );
-
                                                   setState(() {
                                                     isFollowing = true;
                                                     followers++;

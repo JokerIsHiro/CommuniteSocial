@@ -2,13 +2,15 @@ import 'package:communitesocial/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../screens/profile_screen.dart';
+
 class CommentCard extends StatelessWidget {
   final snap;
-  const CommentCard({Key? key, required this.snap}) : super(key: key);
+  final username;
+  const CommentCard({Key? key, required this.snap, required this.username}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       child: Row(
@@ -29,12 +31,26 @@ class CommentCard extends StatelessWidget {
                   RichText(
                     text: TextSpan(
                       children: [
-                        TextSpan(
-                          text: snap.data()['name'],
-                          style: const TextStyle(fontWeight: FontWeight.bold,color: primaryColor)
+                        WidgetSpan(
+                          child: InkWell(
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => ProfileScreen(
+                                  uid: username,
+                                ),
+                              ),
+                            ),
+                            child: Text(
+                              snap.data()['name'],
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ),
                         TextSpan(
-                          text: ' ${snap.data()['text']}', style: TextStyle(color: primaryColor),
+                          text: ' ${snap.data()['text']}',
+                          style: TextStyle(color: primaryColor),
                         ),
                       ],
                     ),
@@ -46,7 +62,9 @@ class CommentCard extends StatelessWidget {
                         snap.data()['datePublished'].toDate(),
                       ),
                       style: const TextStyle(
-                          fontSize: 12, fontWeight: FontWeight.w400,),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   )
                 ],

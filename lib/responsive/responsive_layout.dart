@@ -32,11 +32,13 @@ class _ResponsiveLayoutState extends State<ResponsiveLayout> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
+      
       if (constraints.maxWidth > webSize) {
         // 600 can be changed to 900 if you want to display tablet screen with mobile screen layout
         return widget.webScreenLayout;
       }
       return widget.mobileScreenLayout;
-    });
+    }
+    );
   }
 }

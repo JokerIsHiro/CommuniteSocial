@@ -21,9 +21,9 @@ class _CommentsScreenState extends State<CommentsScreen> {
   final TextEditingController commentEditingController =
       TextEditingController();
 
-  void postComment(String uid, String name, String profilePic) async {
+  void publicarComentario(String uid, String name, String profilePic) async {
     try {
-      String res = await FirestoreMetodos().postComment(
+      String res = await FirestoreMetodos().publicarComentario(
         widget.postId,
         commentEditingController.text,
         uid,
@@ -74,6 +74,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (ctx, index) => CommentCard(
               snap: snapshot.data!.docs[index],
+              username: (snapshot.data! as dynamic).docs[index]['uid'],
             ),
           );
         },
@@ -104,7 +105,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                 ),
               ),
               InkWell(
-                onTap: () => postComment(
+                onTap: () => publicarComentario(
                   user.uid,
                   user.username,
                   user.photoUrl,

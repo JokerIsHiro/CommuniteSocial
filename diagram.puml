@@ -1,0 +1,186 @@
+@startuml
+
+class "communitesocial::model::user.dart::User" {
+  +String email
+  +String uid
+  +String username
+  +String photoUrl
+  +List<dynamic> followers
+  +List<dynamic> following
+  {static} +User fromSnap()
+  +Map<String, dynamic> toJson()
+}
+
+class "communitesocial::providers::user_providers.dart::UserProvider" {
+  -User? _user
+  -AutenticarMetodos _authMethods
+  +User getUser
+  +Future<void> refreshUser()
+}
+
+"communitesocial::providers::user_providers.dart::UserProvider" o-- "communitesocial::model::user.dart::User"
+"communitesocial::providers::user_providers.dart::UserProvider" o-- "communitesocial::resources::auth_method.dart::AutenticarMetodos"
+
+class "communitesocial::resources::auth_method.dart::AutenticarMetodos" {
+  -FirebaseAuth _auth
+  -FirebaseFirestore _firestore
+  +Future<User> getUserDetails()
+  +Future<String> registroUsuario()
+  +Future<String> loginUsuario()
+  +Future<void> cerrarSesion()
+}
+
+"communitesocial::resources::auth_method.dart::AutenticarMetodos" o-- "firebase_auth::firebase_auth.dart::FirebaseAuth"
+"communitesocial::resources::auth_method.dart::AutenticarMetodos" o-- "cloud_firestore::cloud_firestore.dart::FirebaseFirestore"
+
+class "communitesocial::resources::firestore_method.dart::FirestoreMetodos" {
+  -FirebaseFirestore _firestore
+  +Future<String> subirPublicacion()
+  +Future<String> likePost()
+  +Future<String> postComment()
+  +Future<void> likeComment()
+  +Future<String> deletePost()
+  +Future<void> followUser()
+}
+"communitesocial::resources::firestore_method.dart::FirestoreMetodos" o-- "cloud_firestore::cloud_firestore.dart::FirebaseFirestore"
+class "communitesocial::resources::storage_methods.dart::AlmacenamientoMetodos" {
+  -FirebaseStorage _storage
+  -FirebaseAuth _auth
+  +Future<String> subirImagen()
+}
+"communitesocial::resources::storage_methods.dart::AlmacenamientoMetodos" o-- "firebase_storage::firebase_storage.dart::FirebaseStorage"
+"communitesocial::resources::storage_methods.dart::AlmacenamientoMetodos" o-- "firebase_auth::firebase_auth.dart::FirebaseAuth"
+class "communitesocial::responsive::mobile_layout.dart::MobileLayout" {
+  +State<MobileLayout> createState()
+}
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "communitesocial::responsive::mobile_layout.dart::MobileLayout"
+class "communitesocial::responsive::mobile_layout.dart::_MobileLayoutState" {
+  -int _page
+  +PageController pageController
+  +void initState()
+  +void dispose()
+  +void navegarPresionado()
+  +void onPageChanged()
+  +Widget build()
+}
+"flutter::src::widgets::framework.dart::State" <|-- "communitesocial::responsive::mobile_layout.dart::_MobileLayoutState"
+class "communitesocial::responsive::responsive_layout.dart::ResponsiveLayout" {
+  +Widget mobileScreenLayout
+  +Widget webScreenLayout
+  +State<ResponsiveLayout> createState()
+}
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "communitesocial::responsive::responsive_layout.dart::ResponsiveLayout"
+class "communitesocial::responsive::responsive_layout.dart::_ResponsiveLayoutState" {
+  +void initState()
+  +dynamic addData()
+  +Widget build()
+}
+"flutter::src::widgets::framework.dart::State" <|-- "communitesocial::responsive::responsive_layout.dart::_ResponsiveLayoutState"
+class "communitesocial::responsive::web_layout.dart::WebLayout" {
+  +State<WebLayout> createState()
+}
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "communitesocial::responsive::web_layout.dart::WebLayout"
+class "communitesocial::responsive::web_layout.dart::_WebLayoutState" {
+  -int _page
+  +PageController pageController
+  +void initState()
+  +void dispose()
+  +void navegarPresionado()
+  +void onPageChanged()
+  +Widget build()
+}
+"flutter::src::widgets::framework.dart::State" <|-- "communitesocial::responsive::web_layout.dart::_WebLayoutState"
+class "communitesocial::screens::add_post_screen.dart::AddPostScreen" {
+  +_AddPostScreenState createState()
+}
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "communitesocial::screens::add_post_screen.dart::AddPostScreen"
+class "communitesocial::screens::add_post_screen.dart::_AddPostScreenState" {
+  -Uint8List? _image
+  +bool isLoading
+  -TextEditingController _descriptionController
+  -dynamic _selectImage()
+  +dynamic postImage()
+  +void clearImage()
+  +void dispose()
+  +Widget build()
+}
+"flutter::src::widgets::framework.dart::State" <|-- "communitesocial::screens::add_post_screen.dart::_AddPostScreenState"
+class "communitesocial::screens::comment_screen.dart::CommentsScreen" {
+  +dynamic postId
+  +_CommentsScreenState createState()
+}
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "communitesocial::screens::comment_screen.dart::CommentsScreen"
+class "communitesocial::screens::comment_screen.dart::_CommentsScreenState" {
+  +TextEditingController commentEditingController
+  +void postComment()
+  +Widget build()
+}
+"flutter::src::widgets::framework.dart::State" <|-- "communitesocial::screens::comment_screen.dart::_CommentsScreenState"
+class "communitesocial::screens::feed_screen.dart::FeedScreen" {
+  +State<FeedScreen> createState()
+}
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "communitesocial::screens::feed_screen.dart::FeedScreen"
+class "communitesocial::screens::feed_screen.dart::_FeedScreenState" {
+  +Widget build()
+}
+"flutter::src::widgets::framework.dart::State" <|-- "communitesocial::screens::feed_screen.dart::_FeedScreenState"
+class "communitesocial::screens::login.dart::LoginScreen" {
+  +State<LoginScreen> createState()
+}
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "communitesocial::screens::login.dart::LoginScreen"
+class "communitesocial::screens::login.dart::_LoginScreenState" {
+  -TextEditingController _emailController
+  -TextEditingController _passwordController
+  -bool _isLoading
+  +void dispose()
+  +void irRegistro()
+  +void loginUsuario()
+  +Widget build()
+}
+"communitesocial::screens::login.dart::_LoginScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "communitesocial::screens::login.dart::_LoginScreenState"
+class "communitesocial::screens::profile_screen.dart::ProfileScreen" {
+  +String uid
+  +_ProfileScreenState createState()
+}
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "communitesocial::screens::profile_screen.dart::ProfileScreen"
+class "communitesocial::screens::profile_screen.dart::_ProfileScreenState" {
+  +Map<dynamic, dynamic> userData
+  +int postLen
+  +int followers
+  +int following
+  +bool isFollowing
+  +bool isLoading
+  +void initState()
+  +dynamic getData()
+  +Widget build()
+  +Column buildStatColumn()
+}
+"flutter::src::widgets::framework.dart::State" <|-- "communitesocial::screens::profile_screen.dart::_ProfileScreenState"
+class "communitesocial::screens::search_screen.dart::SearchScreen" {
+  +State<SearchScreen> createState()
+}
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "communitesocial::screens::search_screen.dart::SearchScreen"
+class "communitesocial::screens::search_screen.dart::_SearchScreenState" {
+  +TextEditingController searchController
+  +bool isShowUsers
+  +Widget build()
+}
+"communitesocial::screens::search_screen.dart::_SearchScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "communitesocial::screens::search_screen.dart::_SearchScreenState"
+class "communitesocial::screens::signup.dart::SignUpScreen" {
+  +State<SignUpScreen> createState()
+}
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "communitesocial::screens::signup.dart::SignUpScreen"
+class "communitesocial::screens::signup.dart::_SignUpScreenState" {
+  -TextEditingController _usernameController
+  -TextEditingController _emailController
+  -TextEditingController _passwordController
+  -Uint8List? _image
+  +void dispose()
+  +void registrarUsuario()
+  +void irLogin()
+  +void selectImage()
+  +Widget build()
+}
+@enduml

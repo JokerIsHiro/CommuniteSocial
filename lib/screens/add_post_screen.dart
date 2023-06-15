@@ -179,6 +179,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
                         ),
                       ),
                 const Divider(),
+                SizedBox(
+                  height: 32,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -230,3 +233,4 @@ class _AddPostScreenState extends State<AddPostScreen> {
         );
   }
 }
+  

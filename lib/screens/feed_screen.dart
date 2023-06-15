@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:communitesocial/screens/profile_screen.dart';
 import 'package:communitesocial/utils/colors.dart';
 import 'package:communitesocial/utils/dimensions.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -24,19 +25,9 @@ class _FeedScreenState extends State<FeedScreen> {
     return Scaffold(
       backgroundColor:
           width > webSize ? webBackgroundColor : mobileBackgroundColor,
-      appBar: width > webSize
-          ? null
-          : AppBar(
-              backgroundColor: mobileBackgroundColor,
-              centerTitle: false,
-              title: SvgPicture.asset(
-                'images/logoo.svg',
-                color: primaryColor,
-                height: 32,
-              ),
-            ),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('publicaciones').snapshots(),
+        stream:
+            FirebaseFirestore.instance.collection('publicaciones').snapshots(),
         builder: (context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -53,6 +44,7 @@ class _FeedScreenState extends State<FeedScreen> {
               ),
               child: PostCard(
                 snap: snapshot.data!.docs[index].data(),
+                username: (snapshot.data! as dynamic).docs[index]['uid'],
               ),
             ),
           );
