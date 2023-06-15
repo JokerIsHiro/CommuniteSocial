@@ -70,14 +70,14 @@ class _WebLayoutState extends State<WebLayout> {
           ),
           IconButton(
             icon: Icon(
-              Icons.add_a_photo,
+              Icons.chat_bubble,
               color: _page == 2 ? primaryColor : secondaryColor,
             ),
             onPressed: () => navegarPresionado(2),
           ),
           IconButton(
             icon: Icon(
-              Icons.favorite,
+              Icons.add_a_photo,
               color: _page == 3 ? primaryColor : secondaryColor,
             ),
             onPressed: () => navegarPresionado(3),
