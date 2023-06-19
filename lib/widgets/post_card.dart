@@ -116,7 +116,7 @@ class _PostCardState extends State<PostCard> {
                           onTap: () => Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => ProfileScreen(
-                                uid: widget.snap['uid'],
+                                uid: widget.uid,
                               ),
                             ),
                           ),
