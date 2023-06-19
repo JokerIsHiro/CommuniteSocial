@@ -69,10 +69,9 @@ class AutenticarMetodos{
     required String password
   }) async {
     String response = "Ha ocurrido un error";
-    Future<QuerySnapshot<Map<String, dynamic>>> verify = _firestore.collection('usuarios').where('uid', isNotEqualTo: _auth.currentUser!).get();
-
+  
     try{
-      if(email.isNotEmpty || password.isNotEmpty && verify==null){
+      if(email.isNotEmpty || password.isNotEmpty){
         await _auth.signInWithEmailAndPassword(email: email, password: password);
         response = "success";
       }else{
