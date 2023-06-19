@@ -187,7 +187,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.2,
+                      width: MediaQuery.of(context).size.width * 0.4,
                       child: TextField(
                         controller: _descriptionController,
                         decoration: const InputDecoration(
@@ -208,8 +208,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     width: MediaQuery.of(context).size.width * 0.3,
                     loader: Container(
                       padding: const EdgeInsets.all(10),
-                      width: 40,
-                      height: 40,
+                      width: 30,
+                      height: 30,
                       child: const CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),

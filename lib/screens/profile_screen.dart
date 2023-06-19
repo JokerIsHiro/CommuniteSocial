@@ -184,39 +184,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   children: [
                                 FirebaseAuth.instance.currentUser!.uid ==
                                   widget.uid
-                                  ? BotonComm(
-                                  text: 'Eliminar Cuenta',
-                                  backgroundColor:
-                                  mobileBackgroundColor,
-                                  textColor: primaryColor,
-                                  borderColor: Colors.grey,
-                                  function: () async {
-                                    showDialog<String>(
+                                  ? TextButton(
+                                    onPressed: () {
+                                      showDialog<String>(
                                         context: context,
                                         builder: (BuildContext context) => AlertDialog(
-                                            title: const Text('Informe de borrar cuenta'),
-                                            content: const Text('¿Está usted seguro de que quiere borrar su cuenta?'),
-                                            actions: <Widget>[
+                                          title: const Text('Informe de eliminación de cuenta'),
+                                          content: const Text('¿Está seguro de querer eliminar la cuenta?'),
+                                          actions: <Widget>[
                                             TextButton(
-                                              onPressed: () async => await FirestoreMetodos().borrarCuenta(widget.uid),
+                                              onPressed: () async {
+                                                Navigator.pop(context, 'Aceptar');
+                                                AutenticarMetodos().borrarCuenta(userData['uid']);
+                                                await AutenticarMetodos().cerrarSesion();
+                                                },
                                               child: const Text('Aceptar'),
                                             ),
-                                              TextButton(
-                                                onPressed: () => Navigator.pop(context, 'Cancelar'),
-                                                child: const Text('Cancelar'),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                    Navigator.of(context)
-                                        .pushReplacement(
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                        const LoginScreen(),
-                                      ),
-                                    );
-                                  },
-                                ) : const Divider()
+                                            TextButton(
+                                              onPressed: () => Navigator.pop(context, 'Cancelar'),
+                                              child: const Text('Cancelar'),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  child: const Text('Eliminar Cuenta'),
+                                )
+                                    : const Divider()
                                 ],
                                 ),
                               ],

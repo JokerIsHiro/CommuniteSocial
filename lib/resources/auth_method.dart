@@ -69,11 +69,10 @@ class AutenticarMetodos{
     required String password
   }) async {
     String response = "Ha ocurrido un error";
-
-    var dato = await _firestore.collection('usuarios').where('email', isNotEqualTo: email).limit(1).get();
+    Future<QuerySnapshot<Map<String, dynamic>>> verify = _firestore.collection('usuarios').where('uid', isNotEqualTo: _auth.currentUser!).get();
 
     try{
-      if(email.isNotEmpty || password.isNotEmpty){
+      if(email.isNotEmpty || password.isNotEmpty && verify==null){
         await _auth.signInWithEmailAndPassword(email: email, password: password);
         response = "success";
       }else{
@@ -87,5 +86,21 @@ class AutenticarMetodos{
 
   Future<void> cerrarSesion() async {
     await _auth.signOut();
+  }
+
+  Future<void> borrarCuenta(String uid) async {
+
+    String response = "Ha ocurrido algún error";
+    try {
+
+      await _auth.currentUser!.delete();
+
+      await _firestore.collection('usuarios').doc(uid).delete();
+      await  _firestore.collection('posts').doc(uid).delete();
+
+      response = 'success';
+    } catch (err) {
+      response = "El usuario proporcionado no existe, pruebe con otro correo o cree una cuenta";
+    }
   }
 }

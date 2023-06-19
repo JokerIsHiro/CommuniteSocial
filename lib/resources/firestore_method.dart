@@ -8,7 +8,7 @@ import 'package:uuid/uuid.dart';
 import '../model/post.dart';
 
 class FirestoreMetodos {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<String> subirPublicacion(String descripcion, Uint8List? file,
@@ -101,7 +101,7 @@ class FirestoreMetodos {
   Future<void> seguirUsuario(String uid, String followId) async {
     try {
       DocumentSnapshot snap =
-          await _firestore.collection('usuarios').doc(uid).get();
+      await _firestore.collection('usuarios').doc(uid).get();
       List following = (snap.data()! as dynamic)['following'];
 
       if (following.contains(followId)) {
@@ -124,21 +124,5 @@ class FirestoreMetodos {
     } catch (e) {
       print(e.toString());
     }
-  }
-
-  Future<String> borrarCuenta(String uid) async {
-
-    String response = "Ha ocurrido algún error";
-    try {
-      await _auth.signOut();
-      await _auth.currentUser?.delete();
-      await _firestore.collection('usuarios').doc(uid).delete();
-      await _firestore.collection('posts').doc(uid).delete();
-      await _firestore.collection('posts').doc(uid).collection('comentarios').doc(uid).delete();
-      response = 'success';
-    } catch (err) {
-      response = "El usuario proporcionado no existe, pruebe con otro correo o cree una cuenta";
-    }
-    return response;
   }
 }

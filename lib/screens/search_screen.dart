@@ -23,9 +23,6 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
 
-    String searchKey;
-    Stream streamQuery;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: mobileBackgroundColor,
@@ -34,7 +31,7 @@ class _SearchScreenState extends State<SearchScreen> {
             controller: searchController,
             decoration:
                 const InputDecoration(labelText: 'Buscar usuario'),
-            onChanged: (String _) {
+            onFieldSubmitted: (String _) {
               setState(() {
                   isShowUsers = true;
               });
