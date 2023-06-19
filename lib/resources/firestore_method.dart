@@ -2,11 +2,13 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:communitesocial/resources/storage_methods.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uuid/uuid.dart';
 
 import '../model/post.dart';
 
 class FirestoreMetodos {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<String> subirPublicacion(String descripcion, Uint8List? file,
@@ -15,7 +17,7 @@ class FirestoreMetodos {
 
     try {
       String photoUrl = await AlmacenamientoMetodos()
-          .subirImagen('publicaciones', file!, true);
+          .subirImagen('posts', file!, true);
       String postId = const Uuid().v1();
 
       Post post = Post(
@@ -28,7 +30,7 @@ class FirestoreMetodos {
         postUrl: photoUrl,
         profImage: profImage,
       );
-      _firestore.collection('publicaciones').doc(postId).set(post.toJson());
+      _firestore.collection('posts').doc(postId).set(post.toJson());
       response = "success";
     } catch (e) {
       response = e.toString();
@@ -40,11 +42,11 @@ class FirestoreMetodos {
     String res = "Ha ocurrido algún error";
     try {
       if (likes.contains(uid)) {
-        _firestore.collection('publicaciones').doc(postId).update({
+        _firestore.collection('posts').doc(postId).update({
           'likes': FieldValue.arrayRemove([uid])
         });
       } else {
-        _firestore.collection('publicaciones').doc(postId).update({
+        _firestore.collection('posts').doc(postId).update({
           'likes': FieldValue.arrayUnion([uid])
         });
       }
@@ -63,7 +65,7 @@ class FirestoreMetodos {
         // if the likes list contains the user uid, we need to remove it
         String commentId = const Uuid().v1();
         _firestore
-            .collection('publicaciones')
+            .collection('posts')
             .doc(postId)
             .collection('comentarios')
             .doc(commentId)
@@ -88,7 +90,7 @@ class FirestoreMetodos {
   Future<String> borrarPublicacion(String postId) async {
     String res = "Ha ocurrido algún error";
     try {
-      await _firestore.collection('publicaciones').doc(postId).delete();
+      await _firestore.collection('posts').doc(postId).delete();
       res = 'success';
     } catch (err) {
       res = err.toString();
@@ -122,5 +124,21 @@ class FirestoreMetodos {
     } catch (e) {
       print(e.toString());
     }
+  }
+
+  Future<String> borrarCuenta(String uid) async {
+
+    String response = "Ha ocurrido algún error";
+    try {
+      await _auth.signOut();
+      await _auth.currentUser?.delete();
+      await _firestore.collection('usuarios').doc(uid).delete();
+      await _firestore.collection('posts').doc(uid).delete();
+      await _firestore.collection('posts').doc(uid).collection('comentarios').doc(uid).delete();
+      response = 'success';
+    } catch (err) {
+      response = "El usuario proporcionado no existe, pruebe con otro correo o cree una cuenta";
+    }
+    return response;
   }
 }

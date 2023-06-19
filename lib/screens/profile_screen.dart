@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 
 import '../utils/colors.dart';
 import '../utils/utils.dart';
+import '../widgets/button.dart';
 import '../widgets/follow_button.dart';
 import 'login.dart';
 
@@ -34,20 +35,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     getData();
   }
 
+
   getData() async {
     setState(() {
       isLoading = true;
     });
     try {
+      String id = widget.uid;
       var userSnap = await FirebaseFirestore.instance
           .collection('usuarios')
           .doc(widget.uid)
           .get();
 
-      // get post lENGTH
       var postSnap = await FirebaseFirestore.instance
-          .collection('publicaciones')
-          .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .collection('posts')
+          .where("uid", isEqualTo: id)
           .get();
 
       postLen = postSnap.docs.length;
@@ -60,7 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() {});
     } catch (e) {
       showSnackBar(
-        context,
+        context as BuildContext,
         e.toString(),
       );
     }
@@ -86,7 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             body: ListView(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(12),
                   child: Column(
                     children: [
                       Row(
@@ -107,18 +109,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
-                                    buildStatColumn(postLen, "publicaciones"),
+                                    buildStatColumn(postLen, "Publicaciones"),
+                                    SizedBox(width: 5,),
                                     buildStatColumn(followers, "Seguidores"),
+                                    SizedBox(width: 5,),
                                     buildStatColumn(following, "Siguiendo"),
                                   ],
                                 ),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: [
                                     FirebaseAuth.instance.currentUser!.uid ==
                                             widget.uid
-                                        ? FollowButton(
+                                        ? BotonComm(
                                             text: 'Cerrar Sesión',
                                             backgroundColor:
                                                 mobileBackgroundColor,
@@ -137,7 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             },
                                           )
                                         : isFollowing
-                                            ? FollowButton(
+                                            ? BotonComm(
                                                 text: 'Dejar de Seguir',
                                                 backgroundColor: Colors.white,
                                                 textColor: Colors.black,
@@ -156,7 +159,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   });
                                                 },
                                               )
-                                            : FollowButton(
+                                            : BotonComm(
                                                 text: 'Seguir',
                                                 backgroundColor: Colors.blue,
                                                 textColor: Colors.white,
@@ -173,8 +176,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                     followers++;
                                                   });
                                                 },
-                                              )
+                                              ),
                                   ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                FirebaseAuth.instance.currentUser!.uid ==
+                                  widget.uid
+                                  ? BotonComm(
+                                  text: 'Eliminar Cuenta',
+                                  backgroundColor:
+                                  mobileBackgroundColor,
+                                  textColor: primaryColor,
+                                  borderColor: Colors.grey,
+                                  function: () async {
+                                    showDialog<String>(
+                                        context: context,
+                                        builder: (BuildContext context) => AlertDialog(
+                                            title: const Text('Informe de borrar cuenta'),
+                                            content: const Text('¿Está usted seguro de que quiere borrar su cuenta?'),
+                                            actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () async => await FirestoreMetodos().borrarCuenta(widget.uid),
+                                              child: const Text('Aceptar'),
+                                            ),
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(context, 'Cancelar'),
+                                                child: const Text('Cancelar'),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                    Navigator.of(context)
+                                        .pushReplacement(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                        const LoginScreen(),
+                                      ),
+                                    );
+                                  },
+                                ) : const Divider()
+                                ],
                                 ),
                               ],
                             ),
@@ -186,6 +229,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         padding: const EdgeInsets.only(
                           top: 15,
                         ),
+
                         child: Text(
                           userData['username'],
                           style: TextStyle(
@@ -205,8 +249,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const Divider(),
                 FutureBuilder(
                   future: FirebaseFirestore.instance
-                      .collection('publicaciones')
-                      .where('uid', isEqualTo: widget.uid)
+                      .collection('posts')
+                      .where('uid', isEqualTo: userData['uid'])
                       .get(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -214,7 +258,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: CircularProgressIndicator(),
                       );
                     }
-
                     return GridView.builder(
                       shrinkWrap: true,
                       itemCount: (snapshot.data! as dynamic).docs.length,
@@ -228,7 +271,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       itemBuilder: (context, index) {
                         DocumentSnapshot snap =
                             (snapshot.data! as dynamic).docs[index];
-
                         return Container(
                           child: Image(
                             image: NetworkImage(snap['postUrl']),

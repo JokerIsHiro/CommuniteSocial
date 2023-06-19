@@ -59,7 +59,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
-            .collection('publicaciones')
+            .collection('posts')
             .doc(widget.postId)
             .collection('comentarios')
             .snapshots(),

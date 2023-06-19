@@ -97,7 +97,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
       );
         clearImage();
       } else {
-         showDialog<String>(
+        showDialog<String>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
           title: const Text('Informe de la publicación'),
@@ -187,7 +187,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.3,
+                      width: MediaQuery.of(context).size.width * 0.2,
                       child: TextField(
                         controller: _descriptionController,
                         decoration: const InputDecoration(

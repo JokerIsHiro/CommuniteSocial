@@ -42,14 +42,14 @@ class _PostCardState extends State<PostCard> {
   mostrarCantidadComentarios() async {
     try {
       QuerySnapshot snap = await FirebaseFirestore.instance
-          .collection('publicaciones')
+          .collection('posts')
           .doc(widget.snap['postId'])
           .collection('comentarios')
           .get();
       cantidadComentarios = snap.docs.length;
     } catch (err) {
       showSnackBar(
-        context,
+        context as BuildContext,
         err.toString(),
       );
     }
@@ -61,7 +61,7 @@ class _PostCardState extends State<PostCard> {
       await FirestoreMetodos().borrarPublicacion(postId);
     } catch (err) {
       showSnackBar(
-        context,
+        context as BuildContext,
         err.toString(),
       );
     }
@@ -116,7 +116,7 @@ class _PostCardState extends State<PostCard> {
                           onTap: () => Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => ProfileScreen(
-                                uid: widget.username,
+                                uid: widget.snap['uid'],
                               ),
                             ),
                           ),
@@ -125,47 +125,6 @@ class _PostCardState extends State<PostCard> {
                     ),
                   ),
                 ),
-                widget.snap['uid'].toString() == user.uid
-                    ? IconButton(
-                        onPressed: () {
-                          showDialog(
-                            useRootNavigator: false,
-                            context: context,
-                            builder: (context) {
-                              return Dialog(
-                                child: ListView(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 16),
-                                    shrinkWrap: true,
-                                    children: [
-                                      'Eliminar Publicación',
-                                    ]
-                                        .map(
-                                          (e) => InkWell(
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 12,
-                                                        horizontal: 16),
-                                                child: Text(e),
-                                              ),
-                                              onTap: () {
-                                                deletePost(
-                                                  widget.snap['postId']
-                                                      .toString(),
-                                                );
-                                                // remove the dialog box
-                                                Navigator.of(context).pop();
-                                              }),
-                                        )
-                                        .toList()),
-                              );
-                            },
-                          );
-                        },
-                        icon: const Icon(Icons.more_vert),
-                      )
-                    : Container(),
               ],
             ),
           ),
@@ -185,7 +144,7 @@ class _PostCardState extends State<PostCard> {
               alignment: Alignment.center,
               children: [
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.35,
+                  height: MediaQuery.of(context).size.height * 0.45,
                   width: double.infinity,
                   child: Image.network(
                     widget.snap['postUrl'].toString(),
@@ -249,6 +208,18 @@ class _PostCardState extends State<PostCard> {
                   ),
                 ),
               ),
+              widget.snap['uid'].toString() == user.uid
+                  ? IconButton(
+                      onPressed: () {
+                        deletePost(
+                        widget.snap['postId']
+                            .toString(),
+                      ); },
+                      icon: const Icon(
+                        Icons.delete,
+                      ),
+              ):
+                  Container()
             ],
           ),
           Container(

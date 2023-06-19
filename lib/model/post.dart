@@ -26,7 +26,7 @@ class Post {
 
     return Post(
       descripcion: snapshot["descripcion"],
-      uid: snapshot["uid"],
+        uid: snapshot["uid"],
       likes: snapshot["likes"],
       postId: snapshot["postId"],
       datePublished: snapshot["datePublished"],

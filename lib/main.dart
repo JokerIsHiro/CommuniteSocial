@@ -1,4 +1,5 @@
 import 'package:communitesocial/providers/user_providers.dart';
+import 'package:communitesocial/resources/auth_method.dart';
 import 'package:communitesocial/responsive/mobile_layout.dart';
 import 'package:communitesocial/responsive/responsive_layout.dart';
 import 'package:communitesocial/responsive/web_layout.dart';
@@ -32,6 +33,7 @@ void main() async{
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -41,7 +43,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'CommuniteSocial',
+        title: 'Communite Social',
         theme: ThemeData.dark().copyWith(
           scaffoldBackgroundColor: mobileBackgroundColor
         ),
@@ -51,7 +53,7 @@ class MyApp extends StatelessWidget {
             if(snapshot.connectionState == ConnectionState.active){
               if(snapshot.hasData){
                 return const ResponsiveLayout(
-                  webScreenLayout: WebLayout(), 
+                  webScreenLayout: WebLayout(),
                   mobileScreenLayout: MobileLayout(),
                 );
               }else if(snapshot.hasError){
@@ -59,6 +61,9 @@ class MyApp extends StatelessWidget {
                   child: Text('${snapshot.error}'),
                 );
               }
+            }
+            if(snapshot.connectionState == ConnectionState.none){
+              AutenticarMetodos().cerrarSesion();
             }
             if(snapshot.connectionState == ConnectionState.waiting){
               return const Center(

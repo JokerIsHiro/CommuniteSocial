@@ -27,7 +27,7 @@ class _FeedScreenState extends State<FeedScreen> {
           width > webSize ? webBackgroundColor : mobileBackgroundColor,
       body: StreamBuilder(
         stream:
-            FirebaseFirestore.instance.collection('publicaciones').snapshots(),
+            FirebaseFirestore.instance.collection("posts").snapshots(),
         builder: (context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -44,7 +44,7 @@ class _FeedScreenState extends State<FeedScreen> {
               ),
               child: PostCard(
                 snap: snapshot.data!.docs[index].data(),
-                username: (snapshot.data! as dynamic).docs[index]['uid'],
+                username: (snapshot.data! as dynamic).docs[index]['username']
               ),
             ),
           );

@@ -79,23 +79,23 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Container(
           decoration: const BoxDecoration(
             image: DecorationImage(
-                image: AssetImage("images/0-1.jpg"), fit: BoxFit.cover),
+                image: AssetImage("assets/0-1.jpg"), fit: BoxFit.cover),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 32),
           width: double.infinity,
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                Flexible(
+                  child: Container(),
+                  flex: 1,
+                ),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Image.asset(
-                'images/logod.png',
+                'assets/logod.png',
                 height: 256,
               ),
             ]),
-            Flexible(
-              child: Container(),
-              flex: 2,
-            ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 12),
             TextFieldInput(
               hintText: "Inserte su E-Mail",
               textInputType: TextInputType.emailAddress,

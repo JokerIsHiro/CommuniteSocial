@@ -31,14 +31,14 @@ class AutenticarMetodos{
     required String username,
     required String email,
     required String passwd,
-    required Uint8List file
+    Uint8List? file
   }) async {
     String response = 'Ha ocurrido algún error';
     try{
       if(email.isNotEmpty || passwd.isNotEmpty || username.isNotEmpty){
         UserCredential cred = await _auth.createUserWithEmailAndPassword(email: email, password: passwd);
 
-        String photoUrl = await AlmacenamientoMetodos().subirImagen('profilePics', file, false);
+        String photoUrl = await AlmacenamientoMetodos().subirImagen('profilePics', file!, false);
 
         model.User user = model.User(
           username: username,
@@ -69,6 +69,8 @@ class AutenticarMetodos{
     required String password
   }) async {
     String response = "Ha ocurrido un error";
+
+    var dato = await _firestore.collection('usuarios').where('email', isNotEqualTo: email).limit(1).get();
 
     try{
       if(email.isNotEmpty || password.isNotEmpty){

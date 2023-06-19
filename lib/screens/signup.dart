@@ -35,24 +35,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _passwordController.dispose();
   }
 
+  void irLogin() {
+    Navigator.of(context as BuildContext).pushReplacement(
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
+  }
+
   void registrarUsuario() async {
     String response = await AutenticarMetodos().registroUsuario(
         username: _usernameController.text,
         email: _emailController.text,
         passwd: _passwordController.text,
-        file: _image!);
+        file: _image! );
     if (response == "success") {
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => LoginScreen()));
-    } else {
+      showSnackBar(context, response);
+      Navigator.of(context as BuildContext).pushReplacement(
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
+    }else {
       showSnackBar(context, response);
     }
-  }
-
-  void irLogin() {
-    Navigator.of(context as BuildContext).pushReplacement(
-      MaterialPageRoute(builder: (context) => LoginScreen()),
-    );
   }
 
   void selectImage() async {
@@ -75,7 +77,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: Container(
           decoration: const BoxDecoration(
             image: DecorationImage(
-                image: AssetImage("images/0-1.jpg"), fit: BoxFit.cover),
+                image: AssetImage("assets/0-1.jpg"), fit: BoxFit.cover),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 32),
           width: double.infinity,
@@ -86,7 +88,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               flex: 2,
             ),
             const SizedBox(
-              height: 54,
+              height: 64,
               child: Text(
                 "Registrate",
                 style: TextStyle(

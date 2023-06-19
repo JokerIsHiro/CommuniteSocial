@@ -8,6 +8,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../utils/colors.dart';
 
 class SearchScreen extends StatefulWidget {
+
   const SearchScreen({Key? key}) : super(key: key);
 
   @override
@@ -18,8 +19,13 @@ class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController searchController = TextEditingController();
   bool isShowUsers = false;
 
+
   @override
   Widget build(BuildContext context) {
+
+    String searchKey;
+    Stream streamQuery;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: mobileBackgroundColor,
@@ -28,9 +34,9 @@ class _SearchScreenState extends State<SearchScreen> {
             controller: searchController,
             decoration:
                 const InputDecoration(labelText: 'Buscar usuario'),
-            onFieldSubmitted: (String _) {
+            onChanged: (String _) {
               setState(() {
-                isShowUsers = true;
+                  isShowUsers = true;
               });
               print(_);
             },
@@ -41,10 +47,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ? FutureBuilder(
               future: FirebaseFirestore.instance
                   .collection('usuarios')
-                  .where(
-                    'username',
-                    isGreaterThanOrEqualTo: searchController.text,
-                  )
+                  .where('username',isGreaterThanOrEqualTo: searchController.text)
                   .get(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
@@ -81,7 +84,7 @@ class _SearchScreenState extends State<SearchScreen> {
             )
           : FutureBuilder(
               future: FirebaseFirestore.instance
-                  .collection('publicaciones')
+                  .collection('posts')
                   .orderBy('datePublished')
                   .get(),
               builder: (context, snapshot) {
@@ -105,7 +108,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       ? StaggeredTile.count(
                           (index % 7 == 0) ? 1 : 0, (index % 7 == 0) ? 1 : 1)
                       : StaggeredTile.count(
-                          (index % 7 == 0) ? 1 : 1, (index % 7 == 0) ? 2 : 1),
+                          (index % 7 == 0) ? 2 : 1, (index % 7 == 0) ? 1 : 1),
                   mainAxisSpacing: 8.0,
                   crossAxisSpacing: 8.0,
                 );
